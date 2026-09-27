@@ -46,6 +46,23 @@ class AdminUserController extends Controller
         ]);
     }
 
+    public function viewUserKtp(Request $request, $id)
+    {
+        $admin = auth()->guard('api')->user();
+        if (!$admin || !$admin->roles()->whereIn('name', ['Super Admin', 'admin_surat'])->exists()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $user = User::findOrFail($id);
+        
+        if (!$user->ktp_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($user->ktp_path)) {
+            return response()->json(['message' => 'KTP not found'], 404);
+        }
+
+        $path = \Illuminate\Support\Facades\Storage::disk('public')->path($user->ktp_path);
+        return response()->file($path);
+    }
+
     public function getAllUsers(Request $request)
     {
         $admin = auth()->guard('api')->user();

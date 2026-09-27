@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/users/{id}/approve', [\App\Http\Controllers\Api\AdminUserController::class, 'approveUser']);
     Route::post('/admin/users/{id}/approve-kk', [\App\Http\Controllers\Api\AdminUserController::class, 'approveKk']);
     Route::post('/admin/users/{id}/reject-kk', [\App\Http\Controllers\Api\AdminUserController::class, 'rejectKk']);
+    Route::get('/admin/users/{id}/ktp', [\App\Http\Controllers\Api\AdminUserController::class, 'viewUserKtp']);
 });
 
 

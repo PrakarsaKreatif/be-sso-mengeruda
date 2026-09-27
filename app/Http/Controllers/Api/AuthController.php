@@ -33,7 +33,13 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
             'nik' => 'required|string|max:16|unique:users',
             'phone' => 'required|string|max:20',
+            'ktp_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        $ktpPath = null;
+        if ($request->hasFile('ktp_photo')) {
+            $ktpPath = $request->file('ktp_photo')->store('ktp_photos', 'public');
+        }
 
         $user = \App\Models\User::create([
             'name' => $validated['name'],
@@ -41,6 +47,7 @@ class AuthController extends Controller
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
             'nik' => $validated['nik'],
             'phone' => $validated['phone'],
+            'ktp_path' => $ktpPath,
             'is_approved' => false,
         ]);
 
