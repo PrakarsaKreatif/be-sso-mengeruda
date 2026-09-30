@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('family_members', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('nik', 16);
-            $table->string('place_of_birth')->nullable();
-            $table->date('date_of_birth')->nullable();
-            $table->enum('gender', ['L', 'P'])->nullable();
-            $table->string('relationship'); // Suami, Istri, Anak, dll
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('family_members')) {
+            Schema::create('family_members', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->string('name');
+                $table->string('nik', 16);
+                $table->string('place_of_birth')->nullable();
+                $table->date('date_of_birth')->nullable();
+                $table->enum('gender', ['L', 'P'])->nullable();
+                $table->string('relationship'); // Suami, Istri, Anak, dll
+                $table->timestamps();
+            });
+        }
     }
 
     /**

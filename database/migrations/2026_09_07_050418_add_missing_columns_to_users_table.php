@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('nik', 16)->unique()->nullable()->after('email');
-            $table->string('phone', 20)->nullable()->after('nik');
-            $table->string('ktp_path')->nullable()->after('phone');
-            $table->boolean('is_approved')->default(false)->after('ktp_path');
+            if (!Schema::hasColumn('users', 'nik')) {
+                $table->string('nik', 16)->unique()->nullable()->after('email');
+            }
+            if (!Schema::hasColumn('users', 'phone')) {
+                $table->string('phone', 20)->nullable()->after('nik');
+            }
+            if (!Schema::hasColumn('users', 'ktp_path')) {
+                $table->string('ktp_path')->nullable()->after('phone');
+            }
+            if (!Schema::hasColumn('users', 'is_approved')) {
+                $table->boolean('is_approved')->default(false)->after('ktp_path');
+            }
         });
     }
 

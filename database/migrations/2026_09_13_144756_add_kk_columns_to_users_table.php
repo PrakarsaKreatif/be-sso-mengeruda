@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('kk_path')->nullable()->after('is_approved');
-            $table->boolean('is_kk_approved')->default(false)->after('kk_path');
+            if (!Schema::hasColumn('users', 'kk_path')) {
+                $table->string('kk_path')->nullable()->after('is_approved');
+            }
+            if (!Schema::hasColumn('users', 'is_kk_approved')) {
+                $table->boolean('is_kk_approved')->default(false)->after('kk_path');
+            }
         });
     }
 
