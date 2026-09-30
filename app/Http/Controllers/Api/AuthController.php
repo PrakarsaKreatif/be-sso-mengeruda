@@ -56,6 +56,20 @@ class AuthController extends Controller
             $user->roles()->attach($wargaRole->id);
         }
 
+        // Kirim notifikasi email ke admin
+        try {
+            $admins = \App\Models\User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Super Admin', 'admin_surat']);
+            })->get();
+
+            foreach ($admins as $admin) {
+                \Illuminate\Support\Facades\Mail::to($admin->email)
+                    ->send(new \App\Mail\NewUserRegistration($user));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email pendaftaran: ' . $e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Pendaftaran berhasil. Silakan tunggu verifikasi admin.',
             'user' => $user
@@ -98,7 +112,16 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->guard('api')->refresh());
+        $user = auth()->guard('api')->user();
+        $token = auth()->guard('api')->refresh(); // invalidates old token
+        
+        // jwt-auth copies old claims on refresh by default.
+        // to get fresh claims (like updated kk_path), we generate a new token explicitly.
+        if ($user) {
+            $token = auth()->guard('api')->login($user);
+        }
+
+        return $this->respondWithToken($token);
     }
 
     /**

@@ -40,6 +40,14 @@ class AdminUserController extends Controller
         $user->is_approved = true;
         $user->save();
 
+        // Kirim email notifikasi ke warga bahwa akunnya disetujui
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)
+                ->send(new \App\Mail\UserAccountApproved($user));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email persetujuan: ' . $e->getMessage());
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'User approved successfully'
@@ -60,6 +68,23 @@ class AdminUserController extends Controller
         }
 
         $path = \Illuminate\Support\Facades\Storage::disk('public')->path($user->ktp_path);
+        return response()->file($path);
+    }
+
+    public function viewUserKk(Request $request, $id)
+    {
+        $admin = auth()->guard('api')->user();
+        if (!$admin || !$admin->roles()->whereIn('name', ['Super Admin', 'admin_surat'])->exists()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $user = User::findOrFail($id);
+        
+        if (!$user->kk_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($user->kk_path)) {
+            return response()->json(['message' => 'KK not found'], 404);
+        }
+
+        $path = \Illuminate\Support\Facades\Storage::disk('public')->path($user->kk_path);
         return response()->file($path);
     }
 

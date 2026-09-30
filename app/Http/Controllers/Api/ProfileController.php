@@ -98,4 +98,34 @@ class ProfileController extends Controller
             'message' => 'Anggota keluarga berhasil dihapus.'
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->phone = $validated['phone'];
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profil berhasil diperbarui.',
+            'data' => $user
+        ]);
+    }
+
+    public function viewMyKk(Request $request)
+    {
+        $user = $request->user();
+        if (!$user->kk_path || !Storage::disk('public')->exists($user->kk_path)) {
+            abort(404, 'Dokumen KK tidak ditemukan.');
+        }
+        
+        $fullPath = storage_path('app/public/' . $user->kk_path);
+        return response()->file($fullPath);
+    }
 }

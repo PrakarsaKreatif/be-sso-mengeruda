@@ -12,7 +12,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     
     // Profile & Family Routes
+    Route::put('/profile', [\App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);
     Route::post('/profile/upload-kk', [\App\Http\Controllers\Api\ProfileController::class, 'uploadKk']);
+    Route::get('/profile/kk', [\App\Http\Controllers\Api\ProfileController::class, 'viewMyKk']);
     Route::get('/profile/family', [\App\Http\Controllers\Api\ProfileController::class, 'getFamilyMembers']);
     Route::post('/profile/family', [\App\Http\Controllers\Api\ProfileController::class, 'addFamilyMember']);
     Route::delete('/profile/family/{id}', [\App\Http\Controllers\Api\ProfileController::class, 'deleteFamilyMember']);
@@ -24,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/users/{id}/approve-kk', [\App\Http\Controllers\Api\AdminUserController::class, 'approveKk']);
     Route::post('/admin/users/{id}/reject-kk', [\App\Http\Controllers\Api\AdminUserController::class, 'rejectKk']);
     Route::get('/admin/users/{id}/ktp', [\App\Http\Controllers\Api\AdminUserController::class, 'viewUserKtp']);
+    Route::get('/admin/users/{id}/kk', [\App\Http\Controllers\Api\AdminUserController::class, 'viewUserKk']);
 });
 
 
